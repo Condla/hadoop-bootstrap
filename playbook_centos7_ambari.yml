@@ -1,0 +1,59 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: all
+  gather_facts: yes
+  vars:
+    yum_packages_to_install: [
+      wget, vim, sysstat, python-devel, firewalld, ntp,
+      krb5-workstation, openldap, openldap-clients, xfsprogs,
+      xfsdump
+    ]
+  sudo: yes
+  tasks:
+
+    - name: Install the 'Development tools' package group
+      yum: name="@Development tools" state=present
+
+    - name: Install required packages
+      yum: name={{ item }} state=present
+      with_items: yum_packages_to_install
+
+    
+
+    - name: disable iptables
+      service: name=firewalld state=stopped enabled=no
+
+    - name: disable selinux
+      copy: src=./files/selinux dest=/etc/sysconfig/selinux owner=root group=root mode=0644
+
+    - name: disable transparent hugepage for next boot ups
+      copy: src=./files/rc.local dest=/etc/rc.d/rc.local owner=root group=root mode=755
+      register: transparent_hugepage
+
+    - debug: msg={{ transparent_hugepage }}
+
+    - name: disable transparent hugepage now
+      script: ./files/disable_transparent_hugepage.sh
+      when: transparent_hugepage.changed
+
+    - name: add limits for hbase and hdfs users
+      copy: src=./files/hadoop_limits.conf dest=/etc/security/limits.d/hadoop_limits.conf owner=root group=root mode=0644
+
+    - name: start ntpd
+      service: name=ntpd state=started enabled=yes
+
+    - name: set hostname
+      hostname: name={{ inventory_hostname }}
+
+    - name: Build hosts file
+      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' state=present line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" #"
+      when: hostvars[item].ansible_default_ipv4.address is defined
+      with_items: groups['all']
+
+- hosts: utility
+  gather_facts: no
+  sudo: yes
+  tasks:
+    - name: get ambari and install ambari server
+      # TODO
+

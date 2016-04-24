@@ -1,0 +1,15 @@
+[utility]
+utility.hadoop.test.com ansible_ssh_host=54.194.85.110 ansible_ssh_user=ec2-user
+
+[utility:vars]
+cloudera_manager_url="http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin"
+cloudera_manager_installer_path="/tmp/cloudera-manager-installer.bin"
+
+[master]
+
+[worker]
+
+[hadoop:children]
+utility
+master
+worker
