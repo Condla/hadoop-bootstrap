@@ -5,6 +5,6 @@
   become: yes
   gather_facts: yes
   roles:
-    - hadoop-core-centos7
-    - cloudera-manager
-    #    - jenkins
+    #- hadoop-core-centos7
+    #- cloudera-manager
+     - jenkins

@@ -14,3 +14,5 @@ Prerequisites:
 
 Execute _./cloudera-single-node-centos7-ec2.yml_ in order to provision an EC2
 node, prepare the nodes for hadoop and download cloudera manager.
+
+User _--ask-vault-pass_ in case you use an encrypted variables file.
