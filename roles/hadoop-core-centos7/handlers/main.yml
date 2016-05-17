@@ -5,7 +5,6 @@
   poll: 0
   ignore_errors: true
   notify: waiting for server to come back
-  changed_when: True
   
 - name: waiting for server to come back
   local_action: wait_for host={{ inventory_hostname }} state=started
