@@ -1,0 +1,3 @@
+---
+cloudera_manager_url: "http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin"
+cloudera_manager_installer_path: "/tmp/cloudera-manager-installer.bin"

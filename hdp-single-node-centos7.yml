@@ -1,0 +1,6 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: utility
+  roles:
+    - hadoop-core-centos7
+    - ambari

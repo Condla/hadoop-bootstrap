@@ -1,0 +1,5 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: get cloudera manager installer
+  get_url: url={{ cloudera_manager_url }} dest={{ cloudera_manager_installer_path }} mode=0755
+

@@ -1,0 +1,6 @@
+---
+yum_packages_to_install: [
+    wget, vim, sysstat, python-devel, firewalld, ntp,
+    krb5-workstation, openldap, openldap-clients, xfsprogs,
+    xfsdump, telnet
+    ]
