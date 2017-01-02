@@ -1,6 +1,0 @@
----
-# vars file for jenkins
-repo_file_name: /etc/yum.repos.d/jenkins.repo
-jenkins_repo_file_url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
-jenkins_repo_key_url: https://jenkins-ci.org/redhat/jenkins-ci.org.key
-packages_to_install: [jenkins, java, git]

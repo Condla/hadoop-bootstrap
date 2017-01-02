@@ -1,0 +1,25 @@
+[logging]
+ default = FILE:/var/log/krb5libs.log
+ kdc = FILE:/var/log/krb5kdc.log
+ admin_server = FILE:/var/log/kadmind.log
+
+[libdefaults]
+ default_realm = {{ krb_realm }}
+ dns_lookup_realm = false
+ dns_lookup_kdc = false
+ ticket_lifetime = 24h
+ renew_lifetime = 7d
+ forwardable = true
+ udp_preference_limit = 1
+ default_tgs_enctypes = arcfour-hmac
+ default_tkt_enctypes = arcfour-hmac
+
+[realms]
+  {{ krb_realm }} = {
+  kdc = {{ kdc_hostname }}
+  admin_server = {{ kdc_admin_hostname }}
+ }
+
+[domain_realm]
+    {{ krb_domain }}= {{ krb_realm }}
+    .{{ krb_domain }}= {{ krb_realm }}

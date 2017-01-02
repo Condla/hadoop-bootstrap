@@ -1,0 +1,6 @@
+---
+# defaults file for hadoop-bootstrap
+
+ansible_distribution: CentOS
+ansible_distribution_version: 7.x
+install_epel: yes

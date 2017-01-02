@@ -1,0 +1,76 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- block:
+  - name: install epel
+    yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
+      gpgkey: https://mirror.netcologne.de/fedora-epel//RPM-GPG-KEY-EPEL-7
+      gpgcheck: yes
+      failovermethod: priority
+
+  - name: install python-pip
+    yum: name=python-pip state=installed
+
+  - name: upgrade pip
+    pip: name=pip state=latest
+
+when: install_epel == True and ansible_distribution == 'CentOS' and ansible_distribution_version == '7.x'
+
+- block:
+  - name: install required packages
+    yum: name={{ item }} state=installed
+    with_items:
+      - firewalld
+      - ntp
+      - nscd
+      - wget
+      - telnet
+      - python-devel
+      - gcc
+      - bind-utils
+      - krb5-workstation
+      - krb5-libs
+when: ansible_distribution == "CentOS"
+
+
+- name: build hosts file
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' state=present line="{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].ansible_fqdn }}" #"
+  when: hostvars[item].ansible_default_ipv4.address is defined
+  with_items: '{{ play_hosts }}'
+
+- name: disable iptables
+  service: name=firewalld state=stopped enabled=no
+
+- name: disable selinux
+  copy: src=files/selinux dest=/etc/selinux/config owner=root group=root mode=0644
+
+- block:
+  - name: disable transparent hugepage for next reboot
+    copy: src=files/rc.local dest=/etc/rc.d/rc.local owner=root group=root mode=755
+    register: transparent_hugepage
+
+  - name: disable transparent hugepage
+    script: files/disable_transparent_hugepage.sh
+    when: transparent_hugepage.changed
+when: ansible_distribution == 'CentOS' and ansible_distribution_version == '7.x'
+
+- name: start ntpd
+  service: name=ntpd state=started enabled=yes
+
+- name: start nscd
+  service: name=nscd state=started enabled=yes
+
+- name: set hostname
+  hostname: name={{ ansible_fqdn }}
+
+- name: set swappiness at runtime
+  shell: sysctl -w vm.swappiness=10
+
+- name: set swappiness after reboot
+  lineinfile: dest=/etc/sysctl.conf state=present line="vm.swappiness=10"
+
+- name: deploy krb.conf
+  template: src=files/krb5.conf.j2 dest=/etc/krb5.conf

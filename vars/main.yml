@@ -1,0 +1,6 @@
+---
+# vars file for hadoop-bootstrap
+krb_realm: CONDLA.COM
+kdc_hostname: kdc.example.com
+kdc_admin_hostname: kdc.example.com
+krb_domain: example.com

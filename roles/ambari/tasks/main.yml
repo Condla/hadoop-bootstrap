@@ -1,5 +1,0 @@
-#!/usr/bin/env ansible-playbook
----
-- name: get ambari and install ambari server
-    # TODO
-
