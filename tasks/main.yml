@@ -1,5 +1,33 @@
 #!/usr/bin/env ansible-playbook
 ---
+- block:
+  - name: install required packages
+    yum: name={{ item }} state=installed
+    with_items:
+      - curl
+      - openssl
+      - scp
+      - unzip
+      - tar
+      - wget
+      - java-1.8.0-openjdk
+      - firewalld
+      - ntp
+      - nscd
+      - wget
+      - telnet
+      - python-devel
+      - gcc
+      - bind-utils
+      - krb5-workstation
+      - krb5-libs
+
+  - name: install mysql connector
+    yum: name=mysql-connector-java state=installed
+    when: hadoop_db == 'MySQL'
+      
+when: ansible_distribution == "CentOS" or ansible_distribution == "Red Hat Enterprise Linux"
+tags: packages
 
 - block:
   - name: install epel
@@ -17,23 +45,8 @@
   - name: upgrade pip
     pip: name=pip state=latest
 
-when: install_epel == True and ansible_distribution == 'CentOS' and ansible_distribution_version == '7.x'
+when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version == '7'
 
-- block:
-  - name: install required packages
-    yum: name={{ item }} state=installed
-    with_items:
-      - firewalld
-      - ntp
-      - nscd
-      - wget
-      - telnet
-      - python-devel
-      - gcc
-      - bind-utils
-      - krb5-workstation
-      - krb5-libs
-when: ansible_distribution == "CentOS"
 
 
 - name: build hosts file
