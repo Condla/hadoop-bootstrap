@@ -6,7 +6,6 @@
     with_items:
       - curl
       - openssl
-      - scp
       - unzip
       - tar
       - wget
@@ -26,8 +25,8 @@
     yum: name=mysql-connector-java state=installed
     when: hadoop_db == 'MySQL'
       
-when: ansible_distribution == "CentOS" or ansible_distribution == "Red Hat Enterprise Linux"
-tags: packages
+  when: ansible_distribution == "CentOS" or ansible_distribution == "Red Hat Enterprise Linux"
+  tags: packages
 
 - block:
   - name: install epel
@@ -45,7 +44,7 @@ tags: packages
   - name: upgrade pip
     pip: name=pip state=latest
 
-when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version == '7'
+  when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version == '7'
 
 
 
@@ -59,6 +58,12 @@ when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_dist
 
 - name: disable selinux
   copy: src=files/selinux dest=/etc/selinux/config owner=root group=root mode=0644
+  notify: reboot vm
+
+- name: add limits for hbase and hdfs users
+  copy: src=files/hadoop_limits.conf dest=/etc/security/limits.d/hadoop_limits.conf owner=root group=root mode=0644
+  notify: reboot vm
+
 
 - block:
   - name: disable transparent hugepage for next reboot
@@ -68,7 +73,7 @@ when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_dist
   - name: disable transparent hugepage
     script: files/disable_transparent_hugepage.sh
     when: transparent_hugepage.changed
-when: ansible_distribution == 'CentOS' and ansible_distribution_version == '7.x'
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
 
 - name: start ntpd
   service: name=ntpd state=started enabled=yes
@@ -79,11 +84,10 @@ when: ansible_distribution == 'CentOS' and ansible_distribution_version == '7.x'
 - name: set hostname
   hostname: name={{ ansible_fqdn }}
 
-- name: set swappiness at runtime
-  shell: sysctl -w vm.swappiness=10
-
 - name: set swappiness after reboot
   lineinfile: dest=/etc/sysctl.conf state=present line="vm.swappiness=10"
+  notify: reboot vm
 
 - name: deploy krb.conf
-  template: src=files/krb5.conf.j2 dest=/etc/krb5.conf
+  template: src=templates/krb5.conf.j2 dest=/etc/krb5.conf
+
