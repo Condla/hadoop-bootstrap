@@ -25,24 +25,37 @@ Requirements
 Role Variables
 --------------
 
+### Default variables:
+
+* hadoop_db: Defines which db will be used for the Hadoop installation that will
+be done.
+
 ### Security Related Variables:
 
-krb_realm:
+* krb_realm: Define the realm you want to be using for your KDC
+* kdc_hostname: configure where your KDC is running
+* kdc_admin_hostname: configure where kdc admin instance is running
+* krb_domain: define krb_domain
 
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+condla/hdp-instances
 
 Example Playbook
 ----------------
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```
+- name: bootstrap hosts for the hadoop installation
+  hosts: hdp
+  gather_facts: yes
+  become: yes
+  roles:
+    - hadoop-bootstrap
+```
 
 License
 -------
@@ -52,4 +65,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Stefan Kupstaitis-Dunkler (stefan.dun@gmail.com)
