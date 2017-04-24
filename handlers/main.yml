@@ -2,7 +2,7 @@
 # handlers file for hadoop-bootstrap
 
 - name: reboot vm
-  command: shutdown -r now "Ansible updates triggered"
+  command: sleep 2 && shutdown -r now "rebooting...."
   async: 0
   poll: 0
   ignore_errors: true
