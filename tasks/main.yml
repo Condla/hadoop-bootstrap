@@ -46,7 +46,8 @@
 
   when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version == '7'
 
-
+- name: set hostname
+  hostname: name={{ ansible_fqdn }}
 
 - name: build hosts file
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' state=present line="{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].ansible_fqdn }}" #"
@@ -64,7 +65,6 @@
   copy: src=files/hadoop_limits.conf dest=/etc/security/limits.d/hadoop_limits.conf owner=root group=root mode=0644
   notify: reboot vm
 
-
 - block:
   - name: disable transparent hugepage for next reboot
     copy: src=files/rc.local dest=/etc/rc.d/rc.local owner=root group=root mode=755
@@ -80,9 +80,6 @@
 
 - name: start nscd
   service: name=nscd state=started enabled=yes
-
-- name: set hostname
-  hostname: name={{ ansible_fqdn }}
 
 - name: set swappiness after reboot
   lineinfile: dest=/etc/sysctl.conf state=present line="vm.swappiness=10"
