@@ -11,13 +11,17 @@
  renew_lifetime = 7d
  forwardable = true
  udp_preference_limit = 1
- default_tgs_enctypes = arcfour-hmac
- default_tkt_enctypes = arcfour-hmac
+# default_tgs_enctypes = arcfour-hmac
+# default_tkt_enctypes = arcfour-hmac
 
 [realms]
   {{ krb_realm }} = {
-  kdc = {{ kdc_hostname }}
-  admin_server = {{ kdc_admin_hostname }}
+  {% for item in kdc_hostnames %}
+  kdc = {{ item }}
+  {% endfor %}
+  {% for item in kdc_admin_hostnames %}
+  admin_server = {{ item }}
+  {% endfor %}
  }
 
 [domain_realm]
