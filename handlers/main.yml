@@ -2,7 +2,7 @@
 # handlers file for hadoop-bootstrap
 
 - name: reboot vm
-  command: sleep 2 && shutdown -r now "rebooting...."
+  shell: sleep 2 && shutdown -r now "rebooting...."
   async: 0
   poll: 0
   ignore_errors: true
