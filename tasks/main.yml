@@ -20,6 +20,17 @@
       - bind-utils
       - krb5-workstation
       - krb5-libs
+      - sssd
+      - oddjob-mkhomedir
+      - authconfig
+      - sssd-krb5
+      - sssd-ad
+      - sssd-tools
+      - adcli
+      - ntpdate
+      - openssh-clients
+      - openldap-clients
+
 
   - name: install mysql connector
     yum: name=mysql-connector-java state=installed
