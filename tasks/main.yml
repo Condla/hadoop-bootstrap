@@ -49,6 +49,9 @@
 - name: set hostname
   hostname: name={{ ansible_fqdn }}
 
+- name: pause for a minute
+  pause: minutes=1
+
 - name: build hosts file
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' state=present line="{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].ansible_fqdn }}" #"
   when: hostvars[item].ansible_default_ipv4.address is defined
@@ -73,13 +76,22 @@
   - name: disable transparent hugepage
     script: files/disable_transparent_hugepage.sh
     when: transparent_hugepage.changed
+
+  - name: start ntpd
+    systemd: name=ntpd state=started enabled=yes  
+
+  - name: start nscd
+    systemd: name=nscd state=started enabled=yes
   when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
 
-- name: start ntpd
-  service: name=ntpd state=started enabled=yes
+- block:
 
-- name: start nscd
-  service: name=nscd state=started enabled=yes
+  - name: start ntpd
+    service: name=ntpd state=started enabled=yes
+  
+  - name: start nscd
+    service: name=nscd state=started enabled=yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '6'
 
 - name: set swappiness after reboot
   lineinfile: dest=/etc/sysctl.conf state=present line="vm.swappiness=10"
