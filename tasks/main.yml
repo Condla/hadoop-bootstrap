@@ -73,6 +73,9 @@
     script: files/disable_transparent_hugepage.sh
     when: transparent_hugepage.changed
 
+  - name: stop and disable chronyd
+    systemd: name=chronyd state=stopped enabled=no
+    
   - name: start ntpd
     systemd: name=ntpd state=started enabled=yes  
 
