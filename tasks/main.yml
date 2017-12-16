@@ -52,10 +52,33 @@
 - name: set hostname
   hostname: name={{ ansible_fqdn }}
 
-- name: build hosts file
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' state=present line="{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].ansible_fqdn }}" #"
+- name: deploy hosts file
+  local_action:
+    module: copy
+    src: ./files/hosts
+    dest: /tmp/hosts
+  become: no
+  run_once: true
+
+- name: enrich hosts file
+  local_action:
+    module: lineinfile
+    dest: /tmp/hosts
+    regexp: '.*{{ item }}$' 
+    state: present 
+    line: "{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].ansible_fqdn }}"
+  become: no
+  run_once: true
   when: hostvars[item].ansible_default_ipv4.address is defined
   with_items: '{{ play_hosts }}'
+
+- name: distribute hosts file
+  copy: src=/tmp/hosts dest=/etc/hosts
+
+- name: clean local hosts file
+  become: no
+  run_once: true
+  local_action: file name=/tmp/hosts state=absent
 
 - name: disable iptables
   service: name=firewalld state=stopped enabled=no
