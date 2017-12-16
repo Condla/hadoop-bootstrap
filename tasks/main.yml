@@ -1,5 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
+
 - block:
   - name: install required packages
     yum: name={{ item }} state=installed
@@ -24,8 +25,10 @@
     yum: name=mysql-connector-java state=installed
     when: hadoop_db == 'MySQL'
       
-  when: ansible_distribution == "CentOS" or ansible_distribution == "Red Hat Enterprise Linux"
+  when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
   tags: packages
+
+
 
 - block:
   - name: install epel
@@ -43,7 +46,7 @@
   - name: upgrade pip
     pip: name=pip state=latest
 
-  when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version == '7'
+  when: install_epel == True and (ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7'
 
 - name: set hostname
   hostname: name={{ ansible_fqdn }}
@@ -81,7 +84,7 @@
 
   - name: start nscd
     systemd: name=nscd state=started enabled=yes
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7'
 
 - block:
 
@@ -90,7 +93,7 @@
   
   - name: start nscd
     service: name=nscd state=started enabled=yes
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '6'
+  when: (ansible_distribution == "CentOS" or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6'
 
 - name: set swappiness after reboot
   lineinfile: dest=/etc/sysctl.conf state=present line="vm.swappiness=10"

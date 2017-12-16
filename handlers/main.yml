@@ -11,3 +11,7 @@
 - name: wait for server
   local_action: wait_for host={{ ansible_ssh_host | default(inventory_hostname) }} port=22 delay=10 search_regex=OpenSSH
   become: no
+  notify: wait
+
+- name: wait
+  pause: seconds=30
