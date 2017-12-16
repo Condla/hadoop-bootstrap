@@ -19,12 +19,13 @@
       - python-devel
       - gcc
       - bind-utils
+      - bash-completion
 
 
   - name: install mysql connector
     yum: name=mysql-connector-java state=installed
     when: hadoop_db == 'MySQL'
-      
+
   when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
   tags: packages
 
@@ -78,9 +79,9 @@
 
   - name: stop and disable chronyd
     systemd: name=chronyd state=stopped enabled=no
-    
+
   - name: start ntpd
-    systemd: name=ntpd state=started enabled=yes  
+    systemd: name=ntpd state=started enabled=yes
 
   - name: start nscd
     systemd: name=nscd state=started enabled=yes
@@ -90,7 +91,7 @@
 
   - name: start ntpd
     service: name=ntpd state=started enabled=yes
-  
+
   - name: start nscd
     service: name=nscd state=started enabled=yes
   when: (ansible_distribution == "CentOS" or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6'
@@ -98,4 +99,3 @@
 - name: set swappiness after reboot
   lineinfile: dest=/etc/sysctl.conf state=present line="vm.swappiness=10"
   notify: reboot vm
-
