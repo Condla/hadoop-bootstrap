@@ -9,7 +9,7 @@
       - unzip
       - tar
       - wget
-      - java-1.8.0-openjdk
+      - java-1.8.0-openjdk-devel
       - firewalld
       - ntp
       - nscd
